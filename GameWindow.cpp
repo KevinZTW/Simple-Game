@@ -158,16 +158,26 @@ void GameWindow::show_err_msg(int msg) {
 }
 
 GameWindow::GameWindow() {
+  // al_init 助教說用來初始化 allego 各種設定
   if (!al_init()) show_err_msg(-1);
 
   printf("Game Initializing...\n");
 
   display = al_create_display(window_width, window_height);
+  //可以用 al_set_window...調整視窗置放的地方
+
   event_queue = al_create_event_queue();
 
   timer = al_create_timer(1.0 / FPS);
   monster_pro = al_create_timer(1.0 / FPS);
 
+  /*
+  below is for practice only
+  al_clear_to_color(al_map_rgb(255, 255, 0));  //設一個顏色，會進到 buffer
+  al_flip_display();                           //從 buffer 渲染到畫面上
+  // al_reset(5); 可以停五秒鐘
+
+  */
   if (timer == NULL || monster_pro == NULL) show_err_msg(-1);
 
   if (display == NULL || event_queue == NULL) show_err_msg(-1);
@@ -227,9 +237,9 @@ int GameWindow::game_update() {
   /*TODO:*/
   /*Allow towers to detect if monster enters its range*/
   /*Hint: Tower::DetectAttack*/
-  for (auto it : towerSet) {
-    for (auto m : monsterSet) {
-      bool will_attack = it->DetectAttack(m);
+  for (auto _tower : towerSet) {
+    for (auto _monster : monsterSet) {
+      if (_tower->DetectAttack(_monster)) break;
     }
   }
   // update every monster
@@ -243,8 +253,9 @@ int GameWindow::game_update() {
     /*3. Remember to set isDestroyed to "true" if monster is killed*/
     /*Hint: Tower::TriggerAttack*/
     for (auto it : towerSet) {
-      it->isDestroyed = it->TriggerAttack()
+      isDestroyed = it->TriggerAttack(monsterSet[i]);
     }
+
     isReachEnd = monsterSet[i]->Move();
 
     if (isDestroyed) {
@@ -254,6 +265,8 @@ int GameWindow::game_update() {
       menu->Gain_Score(m->getScore());
       monsterSet.erase(monsterSet.begin() + i);
       i--;
+      // if using vector, need to notice that index would change after
+      // erase();
       delete m;
 
     } else if (isReachEnd) {
@@ -270,6 +283,9 @@ int GameWindow::game_update() {
   /*TODO:*/
   /*1. Update the attack set of each tower*/
   /*Hint: Tower::UpdateAttack*/
+  // To erase the attack which is out of the range of the tower ???
+  // why this happened in the beginning?
+  for (auto _tower : towerSet) _tower->UpdateAttack();
 
   return GAME_CONTINUE;
 }
@@ -362,6 +378,16 @@ int GameWindow::process_event() {
     switch (event.keyboard.keycode) {
       case ALLEGRO_KEY_P:
         /*TODO: handle pause event here*/
+        // notice that there are two timer, we need to stop both of them
+        if (al_get_timer_started(timer))
+          al_stop_timer(timer);
+        else
+          al_start_timer(timer);
+
+        if (al_get_timer_started(monster_pro))
+          al_stop_timer(monster_pro);
+        else
+          al_start_timer(monster_pro);
         break;
       case ALLEGRO_KEY_M:
         mute = !mute;
