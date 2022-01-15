@@ -81,7 +81,6 @@ People::Load_Move() {
 
         sprintf(buffer, "./%s/%s_%d.png", class_name, direction_name[i], j);
         img = al_load_bitmap(buffer);
-        std::cout << buffer << std::endl;
 
       if (img) {
           moveImg.push_back(img);

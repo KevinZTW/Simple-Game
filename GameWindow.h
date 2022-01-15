@@ -3,8 +3,10 @@
 
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
+#include "algif5/src/algif.h"
 #include <vector>
 #include <list>
+#include <string>
 #include <time.h>
 #include "Hero.h"
 #include "Menu.h"
@@ -67,6 +69,7 @@ public:
     // detect if a tower will be constructed on road
     bool isOnRoad();
 
+    bool init_scene_monster(const std::string &config_path);
     Tower* create_tower(int);
     Monster* create_monster();
 
@@ -99,6 +102,9 @@ private:
 
 
     Hero* hero;
+    ALGIF_ANIMATION * monster1;
+    std::vector<Monster*> monsterList;
+    //legacy
     std::vector<Monster*> monsterSet;
     std::list<Tower*> towerSet;
 
@@ -109,6 +115,9 @@ private:
 
     bool redraw = false;
     bool mute = false;
+
+    bool changeScene = false;
+    std::string monster_config_path = "./MonsterConfig/scene1.txt";
 };
 
 

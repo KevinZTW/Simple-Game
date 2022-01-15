@@ -1,6 +1,7 @@
 #include "GameWindow.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "global.h"
 
@@ -24,7 +25,7 @@ void GameWindow::game_init() {
   char buffer[50];
 
   icon = al_load_bitmap("./icon.png");
-  background = al_load_bitmap("./StartBackground.jpg");
+  background = al_load_bitmap("./src/Background.png");
 
   for (int i = 0; i < Num_TowerType; i++) {
     sprintf(buffer, "./Tower/%s.png", TowerClass[i]);
@@ -109,6 +110,22 @@ Tower *GameWindow::create_tower(int type) {
   return t;
 }
 
+bool GameWindow::init_scene_monster(const std::string &config_path){
+    //open monster config file
+    std::ifstream config_in;
+    config_in.open(config_path, std::ios::in);
+    int monster_num;
+    config_in >> monster_num;
+    for (int i = 0; i < monster_num; i++){
+        std::string monster_type;
+        int x, y;
+        config_in >> monster_type >> x >> y;
+        std::cout << monster_type << ",  " << x <<", " << y << std::endl;
+    }
+      monster1 = algif_load_animation("./src/kunckle2.gif");
+    return true;
+}
+
 Monster *GameWindow::create_monster() {
   Monster *m = NULL;
 
@@ -138,6 +155,7 @@ void GameWindow::game_play() {
   msg = -1;
   game_reset();
   game_begin();
+
 
   while (msg != GAME_EXIT) {
     msg = game_run();
@@ -210,6 +228,8 @@ GameWindow::GameWindow() {
 
 void GameWindow::game_begin() {
   printf(">>> Start Level[%d]\n", level->getLevel());
+  //必須先 load 不然等等 draw running map ....
+  init_scene_monster(monster_config_path);
   draw_running_map();
 
 //  al_play_sample_instance(startSound);
@@ -223,6 +243,19 @@ void GameWindow::game_begin() {
 
 int GameWindow::game_run() {
   int error = GAME_CONTINUE;
+
+  if (changeScene){
+      //todo change scene view
+
+      //reset hero's position
+      //clear all monster
+      monsterList.clear();
+      //create new monster
+      init_scene_monster(monster_config_path);
+      changeScene = false;
+      //redraw
+      al_flip_display();
+  }
 
   if (!al_is_event_queue_empty(event_queue)) {
     error = process_event();
@@ -358,6 +391,8 @@ int GameWindow::process_event() {
   redraw = false;
 
   // allergo timer event
+  std::cout << "process event" << event.type << std::endl;
+
   if (event.type == ALLEGRO_EVENT_TIMER) {
 
 
@@ -368,18 +403,19 @@ int GameWindow::process_event() {
 
       Coin_Inc_Count = (Coin_Inc_Count + 1) % CoinSpeed;
 
-      if (monsterSet.size() == 0 && !al_get_timer_started(monster_pro)) {
-        al_stop_timer(timer);
-        return GAME_EXIT;
-      }
+      //legacy code
+//      if (monsterSet.size() == 0 && !al_get_timer_started(monster_pro)) {
+//        al_stop_timer(timer);
+//        return GAME_EXIT;
+//      }
 
     } else {
-      if (Monster_Pro_Count == 0) {
-        Monster *m = create_monster();
-
-        if (m != NULL) monsterSet.push_back(m);
-      }
-      Monster_Pro_Count = (Monster_Pro_Count + 1) % level->getMonsterSpeed();
+//      if (Monster_Pro_Count == 0) {
+//        Monster *m = create_monster();
+//
+//        if (m != NULL) monsterSet.push_back(m);
+//      }
+//      Monster_Pro_Count = (Monster_Pro_Count + 1) % level->getMonsterSpeed();
     }
   } else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
     return GAME_EXIT;
@@ -488,33 +524,41 @@ int GameWindow::process_event() {
 }
 
 void GameWindow::draw_running_map() {
-  unsigned int i, j;
+
 
   al_clear_to_color(al_map_rgb(100, 100, 100));
+  //draw background
   al_draw_bitmap(background, 0, 0, 0);
-
-  for (i = 0; i < field_height / 40; i++) {
-    for (j = 0; j < field_width / 40; j++) {
-      char buffer[50];
-      sprintf(buffer, "%d", i * 15 + j);
-      if (level->isRoad(i * 15 + j)) {
-        al_draw_filled_rectangle(j * 40, i * 40, j * 40 + 40, i * 40 + 40,
-                                 al_map_rgb(255, 244, 173));
-      }
-      // al_draw_text(font, al_map_rgb(0, 0, 0), j*40, i*40,
-      // ALLEGRO_ALIGN_CENTER, buffer);
-    }
-  }
-
-
-
-  al_draw_filled_rectangle(field_width, 0, window_width, window_height,
-                           al_map_rgb(100, 100, 100));
-
-  menu->Draw();
-
-  hero->Draw();
+    menu->Draw();
+    hero->Draw();
+    //draw monster kuncle
+    ALLEGRO_BITMAP * monster_frame = algif_get_bitmap(monster1, al_get_time());
+    al_draw_bitmap(monster_frame, 20, 20, 0);
     al_flip_display();
+
+    //unsigned int i, j;
+    //can't see what this for.. seems to be the frame for tower selection
+//  for (i = 0; i < field_height / 40; i++) {
+//    for (j = 0; j < field_width / 40; j++) {
+//      char buffer[50];
+//      sprintf(buffer, "%d", i * 15 + j);
+//      if (level->isRoad(i * 15 + j)) {
+//        al_draw_filled_rectangle(j * 40, i * 40, j * 40 + 40, i * 40 + 40,
+//                                 al_map_rgb(255, 244, 173));
+//      }
+//      // al_draw_text(font, al_map_rgb(0, 0, 0), j*40, i*40,
+//      // ALLEGRO_ALIGN_CENTER, buffer);
+//    }
+//  }
+
+
+//this used to draw the side bar
+//  al_draw_filled_rectangle(field_width, 0, window_width, window_height,
+//                           al_map_rgb(100, 100, 100));
+
+
+
+
     //  for (i = 0; i < monsterSet.size(); i++) {
 //    monsterSet[i]->Draw();
 //  }
@@ -526,3 +570,4 @@ void GameWindow::draw_running_map() {
 //  if (selectedTower != -1)
 //    Tower::SelectedTower(mouse_x, mouse_y, selectedTower);
 }
+
