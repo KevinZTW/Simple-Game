@@ -123,7 +123,6 @@ Monster *GameWindow::create_monster() {
     m = new DemonNijia(level->ReturnPath());
   } else if (level->MonsterNum[CAVEMAN]) {
     level->MonsterNum[CAVEMAN]--;
-    m = new CaveMan(level->ReturnPath());
   } else {
     al_stop_timer(monster_pro);
   }
@@ -205,6 +204,7 @@ GameWindow::GameWindow() {
   al_register_event_source(event_queue, al_get_timer_event_source(timer));
   al_register_event_source(event_queue, al_get_timer_event_source(monster_pro));
 
+  hero = new Hero;
   game_init();
 }
 
@@ -212,10 +212,10 @@ void GameWindow::game_begin() {
   printf(">>> Start Level[%d]\n", level->getLevel());
   draw_running_map();
 
-  al_play_sample_instance(startSound);
-  while (al_get_sample_instance_playing(startSound))
-    ;
-  al_play_sample_instance(backgroundSound);
+//  al_play_sample_instance(startSound);
+//  while (al_get_sample_instance_playing(startSound))
+//    ;
+//  al_play_sample_instance(backgroundSound);
 
   al_start_timer(timer);
   al_start_timer(monster_pro);
@@ -231,61 +231,67 @@ int GameWindow::game_run() {
 }
 
 int GameWindow::game_update() {
-  unsigned int i, j;
-  std::list<Tower *>::iterator it;
+
+    //hero movement
+    if(hero->action){
+        hero->Move();
+    }
+
+//  unsigned int i, j;
+//  std::list<Tower *>::iterator it;
 
   /*TODO:*/
   /*Allow towers to detect if monster enters its range*/
   /*Hint: Tower::DetectAttack*/
-  for (auto _tower : towerSet) {
-    for (auto _monster : monsterSet) {
-      if (_tower->DetectAttack(_monster)) break;
-    }
-  }
+//  for (auto _tower : towerSet) {
+//    for (auto _monster : monsterSet) {
+//      if (_tower->DetectAttack(_monster)) break;
+//    }
+//  }
   // update every monster
   // check if it is destroyed or reaches end point
-  for (i = 0; i < monsterSet.size(); i++) {
-    bool isDestroyed = false, isReachEnd = false;
-
-    /*TODO:*/
-    /*1. For each tower, traverse its attack set*/
-    /*2. If the monster collide with any attack, reduce the HP of the monster*/
-    /*3. Remember to set isDestroyed to "true" if monster is killed*/
-    /*Hint: Tower::TriggerAttack*/
-    for (auto it : towerSet) {
-      isDestroyed = it->TriggerAttack(monsterSet[i]);
-    }
-
-    isReachEnd = monsterSet[i]->Move();
-
-    if (isDestroyed) {
-      Monster *m = monsterSet[i];
-
-      menu->Change_Coin(m->getWorth());
-      menu->Gain_Score(m->getScore());
-      monsterSet.erase(monsterSet.begin() + i);
-      i--;
-      // if using vector, need to notice that index would change after
-      // erase();
-      delete m;
-
-    } else if (isReachEnd) {
-      Monster *m = monsterSet[i];
-
-      if (menu->Subtract_HP()) return GAME_EXIT;
-
-      monsterSet.erase(monsterSet.begin() + i);
-      i--;
-      delete m;
-    }
-  }
+//  for (i = 0; i < monsterSet.size(); i++) {
+//    bool isDestroyed = false, isReachEnd = false;
+//
+//    /*TODO:*/
+//    /*1. For each tower, traverse its attack set*/
+//    /*2. If the monster collide with any attack, reduce the HP of the monster*/
+//    /*3. Remember to set isDestroyed to "true" if monster is killed*/
+//    /*Hint: Tower::TriggerAttack*/
+//    for (auto it : towerSet) {
+//      isDestroyed = it->TriggerAttack(monsterSet[i]);
+//    }
+//
+//    isReachEnd = monsterSet[i]->Move();
+//
+//    if (isDestroyed) {
+//      Monster *m = monsterSet[i];
+//
+//      menu->Change_Coin(m->getWorth());
+//      menu->Gain_Score(m->getScore());
+//      monsterSet.erase(monsterSet.begin() + i);
+//      i--;
+//      // if using vector, need to notice that index would change after
+//      // erase();
+//      delete m;
+//
+//    } else if (isReachEnd) {
+//      Monster *m = monsterSet[i];
+//
+//      if (menu->Subtract_HP()) return GAME_EXIT;
+//
+//      monsterSet.erase(monsterSet.begin() + i);
+//      i--;
+//      delete m;
+//    }
+//  }
 
   /*TODO:*/
   /*1. Update the attack set of each tower*/
   /*Hint: Tower::UpdateAttack*/
   // To erase the attack which is out of the range of the tower ???
   // why this happened in the beginning?
-  for (auto _tower : towerSet) _tower->UpdateAttack();
+//  for (auto _tower : towerSet) _tower->UpdateAttack();
 
   return GAME_CONTINUE;
 }
@@ -351,7 +357,10 @@ int GameWindow::process_event() {
   al_wait_for_event(event_queue, &event);
   redraw = false;
 
+  // allergo timer event
   if (event.type == ALLEGRO_EVENT_TIMER) {
+
+
     if (event.timer.source == timer) {
       redraw = true;
 
@@ -374,9 +383,25 @@ int GameWindow::process_event() {
     }
   } else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
     return GAME_EXIT;
+      // key down event!
   } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
     switch (event.keyboard.keycode) {
-      case ALLEGRO_KEY_P:
+
+
+        case ALLEGRO_KEY_RIGHT:
+            std::cout << "right down" << std::endl;
+            hero->Set_Move(RIGHT);
+            break;
+
+        case ALLEGRO_KEY_LEFT:
+            std::cout << "left down" << std::endl;
+            hero->Set_Move(LEFT);
+            //todo
+            break;
+        case ALLEGRO_KEY_UP:
+            //hero.jump();
+            break;
+        case ALLEGRO_KEY_P:
         /*TODO: handle pause event here*/
         // notice that there are two timer, we need to stop both of them
         if (al_get_timer_started(timer))
@@ -397,6 +422,17 @@ int GameWindow::process_event() {
           al_play_sample_instance(backgroundSound);
         break;
     }
+  } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
+      switch (event.keyboard.keycode) {
+          case ALLEGRO_KEY_RIGHT:
+              std::cout << "right up" << std::endl;
+              hero->Set_Stop();
+              break;
+          case ALLEGRO_KEY_LEFT:
+              std::cout << "left up" << std::endl;
+              hero->Set_Stop();
+              break;
+      }
   } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
     if (event.mouse.button == 1) {
       if (selectedTower != -1 && mouse_hover(0, 0, field_width, field_height)) {
@@ -469,21 +505,24 @@ void GameWindow::draw_running_map() {
       // ALLEGRO_ALIGN_CENTER, buffer);
     }
   }
-  for (i = 0; i < monsterSet.size(); i++) {
-    monsterSet[i]->Draw();
-  }
 
-  for (std::list<Tower *>::iterator it = towerSet.begin(); it != towerSet.end();
-       it++)
-    (*it)->Draw();
 
-  if (selectedTower != -1)
-    Tower::SelectedTower(mouse_x, mouse_y, selectedTower);
 
   al_draw_filled_rectangle(field_width, 0, window_width, window_height,
                            al_map_rgb(100, 100, 100));
 
   menu->Draw();
 
-  al_flip_display();
+  hero->Draw();
+    al_flip_display();
+    //  for (i = 0; i < monsterSet.size(); i++) {
+//    monsterSet[i]->Draw();
+//  }
+//
+//  for (std::list<Tower *>::iterator it = towerSet.begin(); it != towerSet.end();
+//       it++)
+//    (*it)->Draw();
+//
+//  if (selectedTower != -1)
+//    Tower::SelectedTower(mouse_x, mouse_y, selectedTower);
 }

@@ -3,6 +3,8 @@
 
 #include "Circle.h"
 
+enum { LEFT = 0, RIGHT, UP, DOWN };
+
 class Object {
 public:
     Object() {}

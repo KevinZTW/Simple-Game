@@ -1,5 +1,5 @@
 #include "Monster.h"
-
+#include <iostream>
 const int axis_x[] = {-1, 1, 0, 0};
 const int axis_y[] = {0, 0, -1, 1};
 const char direction_name[][10] = {"LEFT", "RIGHT", "UP", "DOWN"};
@@ -56,11 +56,15 @@ Monster::Load_Move()
         for(int j=0; j<direction_count[i]; j++)
         {
             ALLEGRO_BITMAP *img;
-            sprintf(buffer, "./%s/%s_%d.png", class_name, direction_name[i], j);
 
+
+            sprintf(buffer, "./%s/%s_%d.png", class_name, direction_name[i], j);
             img = al_load_bitmap(buffer);
-            if(img)
+
+            if(img){
                 moveImg.push_back(img);
+            }
+
         }
     }
 }

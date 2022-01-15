@@ -6,10 +6,10 @@
 #include <vector>
 #include <list>
 #include <time.h>
+#include "Hero.h"
 #include "Menu.h"
 #include "Level.h"
 #include "WolfKnight.h"
-#include "CaveMan.h"
 #include "Wolf.h"
 #include "DemonNijia.h"
 #include "Arcane.h"
@@ -97,6 +97,8 @@ private:
     LEVEL *level = NULL;
     Menu *menu = NULL;
 
+
+    Hero* hero;
     std::vector<Monster*> monsterSet;
     std::list<Tower*> towerSet;
 
