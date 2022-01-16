@@ -1,4 +1,4 @@
 3
-typea 20 1000
-typea 30 1000
-typeb 20 2000
+DeathBringer 0 120 120
+DeathBringer 240 320 120
+DeathBringer 360 420 120

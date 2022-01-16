@@ -116,13 +116,19 @@ bool GameWindow::init_scene_monster(const std::string &config_path){
     config_in.open(config_path, std::ios::in);
     int monster_num;
     config_in >> monster_num;
+    Monster * m = NULL;
     for (int i = 0; i < monster_num; i++){
         std::string monster_type;
-        int x, y;
-        config_in >> monster_type >> x >> y;
-        std::cout << monster_type << ",  " << x <<", " << y << std::endl;
+        int x, y, r;
+        config_in >> monster_type >> x >> y >> r;
+        if (monster_type == "DeathBringer"){
+            std::cout <<"add death bringer" << x << y << r<<std::endl;
+            m = new DeathBringer(x, y, r);
+        }
+        monsterList.push_back(m);
     }
-      monster1 = algif_load_animation("./src/kunckle2.gif");
+
+
     return true;
 }
 
@@ -131,13 +137,12 @@ Monster *GameWindow::create_monster() {
 
   if (level->MonsterNum[WOLF]) {
     level->MonsterNum[WOLF]--;
-    m = new Wolf(level->ReturnPath());
+//    m = new Wolf(level->ReturnPath());
   } else if (level->MonsterNum[WOLFKNIGHT]) {
     level->MonsterNum[WOLFKNIGHT]--;
-    m = new WolfKnight(level->ReturnPath());
   } else if (level->MonsterNum[DEMONNIJIA]) {
     level->MonsterNum[DEMONNIJIA]--;
-    m = new DemonNijia(level->ReturnPath());
+
   } else if (level->MonsterNum[CAVEMAN]) {
     level->MonsterNum[CAVEMAN]--;
   } else {
@@ -391,7 +396,7 @@ int GameWindow::process_event() {
   redraw = false;
 
   // allergo timer event
-  std::cout << "process event" << event.type << std::endl;
+//  std::cout << "process event" << event.type << std::endl;
 
   if (event.type == ALLEGRO_EVENT_TIMER) {
 
@@ -531,9 +536,8 @@ void GameWindow::draw_running_map() {
   al_draw_bitmap(background, 0, 0, 0);
     menu->Draw();
     hero->Draw();
-    //draw monster kuncle
-    ALLEGRO_BITMAP * monster_frame = algif_get_bitmap(monster1, al_get_time());
-    al_draw_bitmap(monster_frame, 20, 20, 0);
+
+    for (auto monster : monsterList) monster->Draw();
     al_flip_display();
 
     //unsigned int i, j;

@@ -9,11 +9,10 @@
 #include <string>
 #include <time.h>
 #include "Hero.h"
+#include "DeathBringer.h"
 #include "Menu.h"
 #include "Level.h"
-#include "WolfKnight.h"
 #include "Wolf.h"
-#include "DemonNijia.h"
 #include "Arcane.h"
 #include "Archer.h"
 #include "Canon.h"
@@ -102,7 +101,6 @@ private:
 
 
     Hero* hero;
-    ALGIF_ANIMATION * monster1;
     std::vector<Monster*> monsterList;
     //legacy
     std::vector<Monster*> monsterSet;

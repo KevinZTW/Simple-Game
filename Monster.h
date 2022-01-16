@@ -4,8 +4,8 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
-#include <string.h>
-
+#include <string>
+#include "algif5/src/algif.h"
 #include <vector>
 
 #include "Circle.h"
@@ -14,8 +14,8 @@
 
 
 class Monster : public Object {
- public:
-  Monster(std::vector<int> path);
+public:
+    Monster(std::string name, int x, int y, int r);
   virtual ~Monster();
 
   // Draw image per frame
@@ -40,7 +40,8 @@ class Monster : public Object {
   int speed = 1;
   int worth = 10;
   int score = 100;
-  char class_name[20];
+  std::string class_name;
+//  char class_name[20];
 
  private:
   // direction and index for "path"
@@ -55,6 +56,9 @@ class Monster : public Object {
 
   // set of animation images
   std::vector<ALLEGRO_BITMAP*> moveImg;
+  // monster state, LeftIdle....
+  int state = 1;
+  std::vector<ALGIF_ANIMATION*> imgs;
   // path on map
   std::vector<int> path;
 };
