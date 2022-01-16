@@ -228,7 +228,23 @@ GameWindow::GameWindow() {
   al_register_event_source(event_queue, al_get_timer_event_source(monster_pro));
 
   hero = new Hero;
-  game_init();
+}
+
+void GameWindow::init_start_menu(){
+    start_menu_background[0] = al_load_bitmap("./src/start/0.png");
+    start_menu_background[1] = al_load_bitmap("./src/start/1.png");
+}
+
+void GameWindow::run_start_menu(){
+    if (!al_is_event_queue_empty(event_queue)) {
+        process_menu_event();
+    }
+    al_draw_bitmap(start_menu_background[start_menu_select], 0, 0, 0);
+    al_flip_display();
+}
+
+void GameWindow::screen_cleanup(){
+    al_destroy_bitmap(background);
 }
 
 void GameWindow::game_begin() {
@@ -399,7 +415,31 @@ void GameWindow::game_destroy() {
   delete level;
   delete menu;
 }
+int GameWindow::process_menu_event(){
+    al_wait_for_event(event_queue, &event);
+    if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+        switch (event.keyboard.keycode) {
 
+            case ALLEGRO_KEY_UP:
+                if (start_menu_select>0)start_menu_select--;
+                break;
+            case ALLEGRO_KEY_DOWN:
+                if (start_menu_select < 1)start_menu_select++;
+                break;
+            case ALLEGRO_KEY_ENTER:
+                if (start_menu_select == 0)gameState = Game;
+                if (start_menu_select == 1)exit(0);
+                break;
+            case ALLEGRO_KEY_M:
+                mute = !mute;
+                if (mute)
+                    al_stop_sample_instance(backgroundSound);
+                else
+                    al_play_sample_instance(backgroundSound);
+                break;
+        }
+    }
+}
 int GameWindow::process_event() {
   int i;
   int instruction = GAME_CONTINUE;

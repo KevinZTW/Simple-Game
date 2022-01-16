@@ -41,9 +41,11 @@ const int LevelNum = 4;
 const int CoinSpeed = FPS * 2;
 const int Coin_Time_Gain = 1;
 
+enum {Start =0 ,Game, End, Video1};
 class GameWindow
 {
 public:
+
     // constructor
     GameWindow();
     // each process of scene
@@ -58,11 +60,15 @@ public:
     void show_err_msg(int msg);
     void game_destroy();
 
+        void init_start_menu();
+    void run_start_menu();
+    void screen_cleanup();
     // each drawing scene function
     void draw_running_map();
 
     // process of updated event
     int process_event();
+    int process_menu_event();
     // detect if mouse hovers over a rectangle
     bool mouse_hover(int, int, int, int);
     // detect if a tower will be constructed on road
@@ -74,7 +80,7 @@ public:
 
 public:
     bool initial = true;
-
+    int gameState = 0;
 private:
     ALLEGRO_BITMAP *icon;
     ALLEGRO_BITMAP *tower[Num_TowerType];
@@ -105,7 +111,9 @@ private:
     int monster_state_update_counter = 0;
     int monster_state_update_frequency = 20;
 
-
+    //menu
+    ALLEGRO_BITMAP* start_menu_background[2];
+    int start_menu_select = 0;
     //legacy
     std::vector<Monster*> monsterSet;
     std::list<Tower*> towerSet;
