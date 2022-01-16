@@ -1,6 +1,7 @@
 #include "Monster.h"
 #include <iostream>
 #include <string>
+#include <random>
 const int axis_x[] = {-1, 1, 0, 0};
 const int axis_y[] = {0, 0, -1, 1};
 const char direction_name[][10] = {"LEFT", "RIGHT", "UP", "DOWN"};
@@ -8,7 +9,7 @@ const char direction_name[][10] = {"LEFT", "RIGHT", "UP", "DOWN"};
 // set counter frequency of drawing moving animation
 const int draw_frequency = 10;
 
-const int img_num = 2;
+const int img_num = 4;
 Monster::Monster(std::string name, int x, int y, int r)
 {
     this->path = path;
@@ -66,6 +67,51 @@ Monster::~Monster()
 
     delete circle;
 }
+
+void Monster::UpdateState(int hero_x, int hero_y) {
+    int edge = 20;
+
+    // if close to hero, keep chase it
+    int hero_diff = hero_x - circle->x;
+    if (abs(hero_diff) < chase_dst){
+        std::cout << "chase! diff is: " << hero_diff << std::endl;
+        if (hero_diff > 0) state = RightMove;
+        else state = LeftMove;
+    }else if (circle->x <edge || circle->x > window_width - edge){
+        //if close to left/ right screen change move direction
+        if (circle->x <edge) state = RightMove;
+        if (circle->x > window_width - edge) state = LeftMove;
+    }else {
+        //else random movement
+        std::random_device rd; // obtain a random number from hardware
+        std::mt19937 gen(rd()); // seed the generator
+        std::uniform_int_distribution<> distr(0, 30); // define the range
+        int rand_num = distr(gen);
+        //30% to change state
+        if (rand_num > 20) state = rand_num % 4;
+    }
+
+
+
+//    if (base == rand_num){
+//        switch (state) {
+//            case LeftIdle :
+//
+//                break;
+//            case RightIdle :
+//                break;
+//            case LeftMove :
+//                break;
+//            case RightMove :
+//                break;
+//        }
+//    }
+
+}
+void Monster::Move(){
+    if (state == RightMove) circle->x += 2;
+    else if (state == LeftMove) circle->x -= 2;
+};
 bool
 Monster::Subtract_HP(int harm_point)
 {

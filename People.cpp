@@ -19,8 +19,8 @@ void People::Set_Stop(){
     action = false;
 }
 void People::Move(){
-    if (direction == RIGHT) circle->x += 1;
-    else if (direction == LEFT) circle->x -= 1;
+    if (direction == RIGHT) circle->x += 2;
+    else if (direction == LEFT) circle->x -= 2;
 
     counter = (counter + 1) % draw_frequency;
 

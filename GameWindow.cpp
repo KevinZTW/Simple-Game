@@ -270,10 +270,26 @@ int GameWindow::game_run() {
 
 int GameWindow::game_update() {
 
-    //hero movement
+    //update hero  action
     if(hero->action){
         hero->Move();
     }
+    //====Monster========
+    //update monster action
+    //current move left or move right
+        for (auto monster : monsterList) monster->Move();
+
+
+
+    //update monster state
+    if (monster_state_update_counter == 0){
+        for (auto monster : monsterList) monster->UpdateState(hero->getX(), hero->getY());
+    }
+    //update counter
+    monster_state_update_counter = (monster_state_update_counter + 1) % monster_state_update_frequency;
+
+
+
 
 //  unsigned int i, j;
 //  std::list<Tower *>::iterator it;

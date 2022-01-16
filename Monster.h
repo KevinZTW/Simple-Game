@@ -21,11 +21,16 @@ public:
   // Draw image per frame
   // override virtual function "Object::Draw"
   void Draw();
+
+  void UpdateState(int hero_x, int hero_y);
+
+    // Update monster position per frame
+    void Move();
+
   // Load bitmaps of animation image into container "moveImg"
   void Load_Move();
 
-  // Update monster position per frame
-  bool Move();
+
 
   // functions that return information of monster
   int getDir() { return direction; }
@@ -47,6 +52,7 @@ public:
   // direction and index for "path"
   unsigned int step;
   int direction;
+  int chase_dst = 200;
   // end point
   int end_x, end_y;
   // animation counter

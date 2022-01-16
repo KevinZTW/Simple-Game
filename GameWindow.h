@@ -102,6 +102,10 @@ private:
 
     Hero* hero;
     std::vector<Monster*> monsterList;
+    int monster_state_update_counter = 0;
+    int monster_state_update_frequency = 20;
+
+
     //legacy
     std::vector<Monster*> monsterSet;
     std::list<Tower*> towerSet;
