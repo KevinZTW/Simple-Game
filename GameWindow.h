@@ -8,7 +8,7 @@
 #include <list>
 #include <string>
 #include <time.h>
-#include "Hero.h"
+#include "People.h"
 #include "DeathBringer.h"
 #include "Menu.h"
 #include "Level.h"
@@ -98,6 +98,7 @@ private:
 
     ALLEGRO_SAMPLE *sample = NULL;
     ALLEGRO_SAMPLE_INSTANCE *startSound = NULL;
+
     ALLEGRO_SAMPLE_INSTANCE *clearSound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *failSound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *backgroundSound = NULL;
@@ -106,7 +107,7 @@ private:
     Menu *menu = NULL;
 
 
-    Hero* hero;
+    People* hero;
     std::vector<Monster*> monsterList;
     int monster_state_update_counter = 0;
     int monster_state_update_frequency = 20;

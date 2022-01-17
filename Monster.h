@@ -3,6 +3,8 @@
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <stdio.h>
 #include <string>
 #include "algif5/src/algif.h"
@@ -21,7 +23,7 @@ public:
   // Draw image per frame
   // override virtual function "Object::Draw"
   void Draw();
-
+  void Hurt(int power);
   void UpdateState(int hero_x, int hero_y);
 
     // Update monster position per frame
@@ -36,23 +38,28 @@ public:
   int getDir() { return direction; }
   int getWorth() { return worth; }
   int getScore() { return score; }
-
+  int getHealth(){return HealthPoint;}
   bool Subtract_HP(int);
 
  protected:
   int direction_count[4];
-  int HealthPoint = 20;
+  int HealthPoint = 5;
   int speed = 1;
   int worth = 10;
   int score = 100;
   std::string class_name;
 //  char class_name[20];
+//sound
+    ALLEGRO_SAMPLE_INSTANCE *attack_sound = NULL;
 
  private:
   // direction and index for "path"
   unsigned int step;
-  int direction;
-  int chase_dst = 200;
+  int direction = LEFT;
+  int chase_dst = 400;
+  int attack_dst = 150;
+  int attack_animation_duration = 2;
+  int attack_animation_counter = 0;
   // end point
   int end_x, end_y;
   // animation counter
@@ -63,10 +70,13 @@ public:
   // set of animation images
   std::vector<ALLEGRO_BITMAP*> moveImg;
   // monster state, LeftIdle....
-  int state = 1;
+  int state = RightIdle;
+  int cool_down_counter = 0;
+  bool cool_down = true;
+
+  //material
   std::vector<ALGIF_ANIMATION*> imgs;
-  // path on map
-  std::vector<int> path;
+
 };
 
 #endif  // MONSTER_H_INCLUDED

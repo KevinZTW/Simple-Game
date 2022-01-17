@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include "People.h"
 #include "global.h"
 
 #define WHITE al_map_rgb(255, 255, 255)
@@ -27,10 +27,10 @@ void GameWindow::game_init() {
   icon = al_load_bitmap("./icon.png");
   background = al_load_bitmap("./src/Background.png");
 
-  for (int i = 0; i < Num_TowerType; i++) {
-    sprintf(buffer, "./Tower/%s.png", TowerClass[i]);
-    tower[i] = al_load_bitmap(buffer);
-  }
+//  for (int i = 0; i < Num_TowerType; i++) {
+//    sprintf(buffer, "./Tower/%s.png", TowerClass[i]);
+//    tower[i] = al_load_bitmap(buffer);
+//  }
 
   al_set_display_icon(display, icon);
   al_reserve_samples(3);
@@ -227,7 +227,7 @@ GameWindow::GameWindow() {
   al_register_event_source(event_queue, al_get_timer_event_source(timer));
   al_register_event_source(event_queue, al_get_timer_event_source(monster_pro));
 
-  hero = new Hero;
+  hero = new People;
 }
 
 void GameWindow::init_start_menu(){
@@ -256,7 +256,7 @@ void GameWindow::game_begin() {
 //  al_play_sample_instance(startSound);
 //  while (al_get_sample_instance_playing(startSound))
 //    ;
-//  al_play_sample_instance(backgroundSound);
+  al_play_sample_instance(backgroundSound);
 
   al_start_timer(timer);
   al_start_timer(monster_pro);
@@ -291,11 +291,16 @@ int GameWindow::game_update() {
         hero->Move();
     }
     //====Monster========
+    //kill monster if no HP
+
+    for (auto it = monsterList.begin(); it !=monsterList.end();){
+        if ((*it)->getHealth() < 1) monsterList.erase(it);
+        else  ++it;
+    }
+
     //update monster action
     //current move left or move right
-        for (auto monster : monsterList) monster->Move();
-
-
+    for (auto monster : monsterList) monster->Move();
 
     //update monster state
     if (monster_state_update_counter == 0){
@@ -380,12 +385,11 @@ void GameWindow::game_reset() {
   Monster_Pro_Count = 0;
   mute = false;
   redraw = false;
-  menu->Reset();
+//  menu->Reset();
 
   // stop sample instance
   al_stop_sample_instance(backgroundSound);
   al_stop_sample_instance(startSound);
-
   // stop timer
   al_stop_timer(timer);
   al_stop_timer(monster_pro);
@@ -487,13 +491,17 @@ int GameWindow::process_event() {
 
         case ALLEGRO_KEY_RIGHT:
             std::cout << "right down" << std::endl;
-            hero->Set_Move(RIGHT);
+            hero->Set_Run(RIGHT);
             break;
 
         case ALLEGRO_KEY_LEFT:
             std::cout << "left down" << std::endl;
-            hero->Set_Move(LEFT);
+            hero->Set_Run(LEFT);
             //todo
+            break;
+        case ALLEGRO_KEY_A:
+            std::cout << "a down" << std::endl;
+            hero->Set_Attack(monsterList);
             break;
         case ALLEGRO_KEY_UP:
             //hero.jump();
@@ -523,11 +531,15 @@ int GameWindow::process_event() {
       switch (event.keyboard.keycode) {
           case ALLEGRO_KEY_RIGHT:
               std::cout << "right up" << std::endl;
-              hero->Set_Stop();
+              hero->Set_Idle();
               break;
           case ALLEGRO_KEY_LEFT:
               std::cout << "left up" << std::endl;
-              hero->Set_Stop();
+              hero->Set_Idle();
+              break;
+          case ALLEGRO_KEY_A:
+              std::cout << "a up" << std::endl;
+              hero->Set_Idle();
               break;
       }
   } else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {

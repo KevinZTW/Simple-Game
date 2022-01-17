@@ -1,5 +1,7 @@
 #include "People.h"
 #include <iostream>
+
+
 #include <allegro5/allegro_image.h>
 /* Take Monster.cpp as refernce */
 
@@ -7,32 +9,46 @@
 const int axis_x[] = {-1, 1, 0, 0};
 const int axis_y[] = {0, 0, -1, 1};
 const char direction_name[][10] = {"LEFT", "RIGHT", "UP", "DOWN"};
-
+const int img_num = 8;
 // set counter frequency of drawing moving animation
 const int draw_frequency = 10;
 
-void People::Set_Move(int dir) {
+
+void People::Set_Attack(std::vector<Monster*> &monsters) {
+    if(direction == LEFT) state = LeftAttack;
+    else state = RightAttack;
+    if (attack_empower_counter == attack_empower_duration-1)Attack(monsters);
+    else attack_empower_counter = (attack_empower_counter+1) %attack_empower_duration;
+}
+
+void People::Attack(std::vector<Monster*> &monsters) {
+    for(auto monster : monsters) {
+        int monster_diff = monster->getX() - circle->x;
+        if (monster_diff < attack_dst) monster->Hurt(attack_pow);
+    }
+}
+
+void People::Set_Run(int dir) {
     action = true;
     direction = dir;
+    if(direction == LEFT) state = LeftRun;
+    else state = RightRun;
 }
-void People::Set_Stop(){
+void People::Set_Idle(){
     action = false;
+    if(direction == LEFT) state = LeftIdle;
+    else state = RightIdle;
 }
 void People::Move(){
-    if (direction == RIGHT) circle->x += 2;
-    else if (direction == LEFT) circle->x -= 2;
-
-    counter = (counter + 1) % draw_frequency;
-
-    if(counter == 0)
-        sprite_pos = (sprite_pos + 1) % direction_count[direction];
+    if (direction == RIGHT) circle->x += speed;
+    else if (direction == LEFT) circle->x -= speed;
 };
 
 People::People() {
   circle = new Circle;
     circle->x =  10;
-    circle->y =  window_height/3;
-    circle->r = grid_width/2;
+    circle->y =  window_height - 100;
+    circle->r = grid_width / 2;
 
     sprite_pos = 0;
     counter = 0;
@@ -42,31 +58,20 @@ People::People() {
     direction = RIGHT;
 
     //Under object might override this value
-    direction_count[LEFT] = 1;
-    direction_count[RIGHT] = 1;
-    direction_count[UP] = 1;
-    direction_count[DOWN] = 1;
-
-    //the hero class would overide
-//  strncpy(class_name, "Hero", 20);
+    for(int i = 0; i < img_num; i++){
+        std::string gif_path ="./Hero2/"+std::to_string(i)+".gif";
+        ALGIF_ANIMATION* img =  algif_load_animation(gif_path.c_str());
+        imgs.push_back(img);
+    }
 }
 
 People::~People() {
-  for (unsigned int i = 0; i < moveImg.size(); i++) {
-    ALLEGRO_BITMAP *img = moveImg[i];
 
-    moveImg.erase(moveImg.begin() + i);
-
-    i--;
-    al_destroy_bitmap(img);
-  }
-  moveImg.clear();
-
+ for (auto i : imgs) algif_destroy_animation(i);
+ imgs.clear();
   delete circle;
 }
-void People::Test() {
-    std::cout <<"Hi, I am" <<class_name<< std::endl;
-}
+
 void
 People::Load_Move() {
   char buffer[50];
@@ -93,26 +98,29 @@ People::Load_Move() {
 void
 People::Draw() {
 
-    int w, h;
-    int offset = 0;
+    al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,79, 200));
+    ALLEGRO_BITMAP *bitmap = algif_get_bitmap(imgs[state], al_get_time());
+    al_draw_bitmap(bitmap, circle->x-100, circle->y-100, 0);
+
+//    int w, h;
+//    int offset = 0;
     // calculate the number of pictures before current direction
-    for (int i = 0; i < direction; i++) offset += direction_count[i];
+//    for (int i = 0; i < direction; i++) offset += direction_count[i];
 
 //    if (!moveImg[offset + sprite_pos]) return;
 
     // get height and width of sprite bitmap
-    w = al_get_bitmap_width(moveImg[offset + sprite_pos]);
-    h = al_get_bitmap_height(moveImg[offset + sprite_pos]);
+//    w = al_get_bitmap_width(moveImg[offset + sprite_pos]);
+//    h = al_get_bitmap_height(moveImg[offset + sprite_pos]);
 
     // draw bitmap align grid edge
 //    al_draw_bitmap(moveImg[offset + sprite_pos], circle->x ,
 //                   circle->y, 0);
 
-    al_draw_bitmap(moveImg[offset + sprite_pos], circle->x - w / 2,
-                   circle->y - (h - grid_height / 2), 0);
+//    al_draw_bitmap(moveImg[offset + sprite_pos], circle->x - w / 2,
+//                   circle->y - (h - grid_height / 2), 0);
 
-//     al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,
-//     79, 200));
+
 
 
 }
