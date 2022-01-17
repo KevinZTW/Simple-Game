@@ -35,35 +35,39 @@ class People : public Object {
   //init the direction hero to move
   void Set_Run(int dir);
   void Set_Idle();
-    void Set_Attack(std::vector<Monster*> &monsters);
+  void Set_Attack(std::vector<Monster*> &monsters);
   //execute the move
   void Move();
-    void Attack(std::vector<Monster*> &monsters);
-  // Update people position per frame
-  // And detect if it reaches end point but not destroyed
-
+  void Attack(std::vector<Monster*> &monsters);
+  void Hurt(int power);
+  int getHealth(){return HealthPoint;}
+  int AddHealth(int power){HealthPoint+= power;}
+    //sound
+    ALLEGRO_SAMPLE_INSTANCE *swing_sound = NULL;
+    ALLEGRO_SAMPLE_INSTANCE *hurt_sound = NULL;
+    ALLEGRO_SAMPLE_INSTANCE *collect_sound = NULL;
+    ALLEGRO_SAMPLE_INSTANCE *walk_sound = NULL;
  protected:
-    int attack_dst = 30;
+    int attack_dst = 60;
     int attack_pow = 1;
   int direction_count[4];
     int HealthPoint = 20;
+    int hurt_cool_down_duration = 160;
+    int hurt_cool_down_counter = hurt_cool_down_duration-2;
+    int hurt_hit_back_dst = 80;
     int speed = 2;
   char class_name[20];
 
  private:
   int direction;
-  int attack_empower_duration = 5;
-    int attack_empower_counter = 0;
-  // end point
-  int end_x, end_y;
-  // animation counter
-  int counter;
-  // animation image of current direction
-  int sprite_pos;
+  int attack_empower_duration = 3;
+  int attack_empower_counter = 0;
+
   int state = 1;
   // set of animation images
   std::vector<ALLEGRO_BITMAP*> moveImg;
   std::vector<ALGIF_ANIMATION*> imgs;
+
 
 };
 

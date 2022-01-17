@@ -26,8 +26,9 @@ Menu::Enough_Coin(int type)
     return (Coin + need_coin[type] >= 0);
 }
 
-Menu::Menu()
+Menu::Menu(People* h)
 {
+    hero = h;
     char filename[50];
 
     HealthPoint = 10;
@@ -73,7 +74,7 @@ Menu::Draw()
 {
     char buffer[50];
 
-    sprintf(buffer, "%d", HealthPoint);
+    sprintf(buffer, "%d", hero->getHealth());
     al_draw_bitmap(love, offsetX, 20, 0);
     al_draw_text(menuFont, al_map_rgb(255, 255, 255), 2*al_get_bitmap_width(love) + offsetX, 20, 0, buffer);
 

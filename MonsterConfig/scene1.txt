@@ -1,4 +1,4 @@
 3
-DeathBringer 150 1000 120
-DeathBringer 800 1000 120
-DeathBringer 1200 1000 120
+DeathBringer 150 1000 12
+DeathBringer 800 1000 12
+DeathBringer 1200 1000 12

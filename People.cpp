@@ -22,6 +22,7 @@ void People::Set_Attack(std::vector<Monster*> &monsters) {
 }
 
 void People::Attack(std::vector<Monster*> &monsters) {
+    al_play_sample_instance(swing_sound);
     for(auto monster : monsters) {
         int monster_diff = monster->getX() - circle->x;
         if (monster_diff < attack_dst) monster->Hurt(attack_pow);
@@ -31,6 +32,7 @@ void People::Attack(std::vector<Monster*> &monsters) {
 void People::Set_Run(int dir) {
     action = true;
     direction = dir;
+
     if(direction == LEFT) state = LeftRun;
     else state = RightRun;
 }
@@ -40,18 +42,30 @@ void People::Set_Idle(){
     else state = RightIdle;
 }
 void People::Move(){
+    al_play_sample_instance(walk_sound);
     if (direction == RIGHT) circle->x += speed;
     else if (direction == LEFT) circle->x -= speed;
 };
+
+void People::Hurt(int power){
+
+    if (hurt_cool_down_counter == hurt_cool_down_duration - 1){
+        HealthPoint -=power;
+        circle->x -= hurt_hit_back_dst;
+        //todo add sound
+
+        //todo add image effect
+    }else{
+        hurt_cool_down_counter = (hurt_cool_down_counter+1)%hurt_cool_down_duration;
+    }
+}
+
 
 People::People() {
   circle = new Circle;
     circle->x =  10;
     circle->y =  window_height - 100;
     circle->r = grid_width / 2;
-
-    sprite_pos = 0;
-    counter = 0;
 
 
     // default direction is right
@@ -63,12 +77,39 @@ People::People() {
         ALGIF_ANIMATION* img =  algif_load_animation(gif_path.c_str());
         imgs.push_back(img);
     }
+    //load sound
+    ALLEGRO_SAMPLE *sample;
+    sample = al_load_sample("./Hero2/collect.ogg");
+    collect_sound = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(collect_sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(collect_sound, al_get_default_mixer());
+
+    sample = al_load_sample("./Hero2/hurt.ogg");
+    hurt_sound = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(hurt_sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(hurt_sound, al_get_default_mixer());
+
+    sample = al_load_sample("./Hero2/walk.ogg");
+    walk_sound = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(walk_sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(walk_sound, al_get_default_mixer());
+
+    sample = al_load_sample("./Hero2/swing.ogg");
+    swing_sound = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(swing_sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(swing_sound, al_get_default_mixer());
+
+
 }
 
 People::~People() {
 
  for (auto i : imgs) algif_destroy_animation(i);
  imgs.clear();
+    al_destroy_sample_instance(collect_sound);
+    al_destroy_sample_instance(hurt_sound);
+    al_destroy_sample_instance(walk_sound);
+    al_destroy_sample_instance(swing_sound);
   delete circle;
 }
 

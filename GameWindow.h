@@ -8,6 +8,8 @@
 #include <list>
 #include <string>
 #include <time.h>
+#include "Item.h"
+#include "Circle.h"
 #include "People.h"
 #include "DeathBringer.h"
 #include "Menu.h"
@@ -109,6 +111,7 @@ private:
 
     People* hero;
     std::vector<Monster*> monsterList;
+    std::vector<Item*> itemList;
     int monster_state_update_counter = 0;
     int monster_state_update_frequency = 20;
 

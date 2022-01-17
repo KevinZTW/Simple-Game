@@ -4,6 +4,7 @@
 #include <fstream>
 #include "People.h"
 #include "global.h"
+#include "Item.h"
 
 #define WHITE al_map_rgb(255, 255, 255)
 #define BLACK al_map_rgb(0, 0, 0)
@@ -33,7 +34,7 @@ void GameWindow::game_init() {
 //  }
 
   al_set_display_icon(display, icon);
-  al_reserve_samples(3);
+  al_reserve_samples(5);
 
   sample = al_load_sample("growl.wav");
   startSound = al_create_sample_instance(sample);
@@ -46,7 +47,9 @@ void GameWindow::game_init() {
   al_attach_sample_instance_to_mixer(backgroundSound, al_get_default_mixer());
 
   level = new LEVEL(1);
-  menu = new Menu();
+  hero = new People;
+  menu = new Menu(hero);
+
 }
 
 bool GameWindow::mouse_hover(int startx, int starty, int width, int height) {
@@ -227,7 +230,7 @@ GameWindow::GameWindow() {
   al_register_event_source(event_queue, al_get_timer_event_source(timer));
   al_register_event_source(event_queue, al_get_timer_event_source(monster_pro));
 
-  hero = new People;
+
 }
 
 void GameWindow::init_start_menu(){
@@ -290,12 +293,22 @@ int GameWindow::game_update() {
     if(hero->action){
         hero->Move();
     }
+    int hero_hurt_by_dst = false;
+    for (auto it = monsterList.begin(); it !=monsterList.end();it++){
+        int dst = abs((*it)->getX() -  hero->getX());
+        if (dst < 10)hero_hurt_by_dst = true;
+    }
+    if (hero_hurt_by_dst) hero->Hurt(5);
+
     //====Monster========
     //kill monster if no HP
 
     for (auto it = monsterList.begin(); it !=monsterList.end();){
-        if ((*it)->getHealth() < 1) monsterList.erase(it);
-        else  ++it;
+        if ((*it)->getHealth() < 1) {
+            Item * item = new Item(0, (*it)->getX(), window_height - 100);
+            itemList.push_back(item);
+            monsterList.erase(it);
+        }else  ++it;
     }
 
     //update monster action
@@ -503,6 +516,20 @@ int GameWindow::process_event() {
             std::cout << "a down" << std::endl;
             hero->Set_Attack(monsterList);
             break;
+        case ALLEGRO_KEY_Z:
+            std::cout << "z down" << std::endl;
+            for (auto it = itemList.begin(); it != itemList.end();) {
+                int diff = abs((*it)->getX() - hero->getX());
+                if (diff < 50) {
+                    //collect item
+                    al_play_sample_instance(hero->collect_sound);
+                    if ((*it)->type==HealthPack) hero->AddHealth(20);
+                    itemList.erase(it);
+                } else {
+                    it++;
+                }
+            }
+            break;
         case ALLEGRO_KEY_UP:
             //hero.jump();
             break;
@@ -606,6 +633,7 @@ void GameWindow::draw_running_map() {
     hero->Draw();
 
     for (auto monster : monsterList) monster->Draw();
+    for (auto item : itemList)item->Draw();
     al_flip_display();
 
     //unsigned int i, j;

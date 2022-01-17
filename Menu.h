@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "People.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -15,7 +16,7 @@
 class Menu : public Object
 {
 public:
-    Menu();
+    Menu(People* hero);
     virtual ~Menu();
 
     void Reset();
@@ -42,6 +43,7 @@ public:
     int getKilled() { return killedMonster; }
 
 private:
+    People * hero;
     std::vector<ALLEGRO_BITMAP*> menu_tower;
     ALLEGRO_BITMAP *love = NULL;
     ALLEGRO_FONT *menuFont;
