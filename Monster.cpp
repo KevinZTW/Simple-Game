@@ -62,19 +62,22 @@ void Monster::UpdateState(int hero_x, int hero_y) {
     int cool_down_duration = 5;
     int death_bringer_attack_img_offset_y = 65;
     int death_bringer_attack_img_offset_x = 95;
+    int imp_attack_img_offset_y = 65;
+    int imp_attack_img_offset_x = 95;
 
     //after attack recover
     if (state== LeftAttack || state== RightAttack){
         cool_down = true;
         if(class_name == "DeathBringer" && direction == LEFT) circle->x += death_bringer_attack_img_offset_x;
         if(class_name == "DeathBringer")circle->y += death_bringer_attack_img_offset_y;
+        if(class_name == "Imp" ) circle->x += imp_attack_img_offset_x;
+        if(class_name == "Imp")circle->y += imp_attack_img_offset_y;
         cool_down_counter = 0;
     }
 
     if (cool_down && cool_down_counter > cool_down_duration)cool_down = false;
 
     if (cool_down) {
-//        std::cout << "cool down~~" << std::endl;
         if (direction == LEFT) state = LeftIdle;
         else state = RightIdle;
         cool_down_counter++;
@@ -94,6 +97,8 @@ void Monster::UpdateState(int hero_x, int hero_y) {
 
         if(class_name == "DeathBringer")circle->y -= death_bringer_attack_img_offset_y;
         if(class_name == "DeathBringer" && direction == LEFT) circle->x -=death_bringer_attack_img_offset_x;
+        if(class_name == "Imp" ) circle->x -= imp_attack_img_offset_x;
+        if(class_name == "Imp")circle->y -= imp_attack_img_offset_y;
         attack_animation_counter = 0;
         if (hero_diff > 0) state= RightAttack, direction = RIGHT;
         else state = LeftAttack, direction = LEFT;

@@ -52,10 +52,10 @@ class People : public Object {
     int attack_pow = 1;
   int direction_count[4];
     int HealthPoint = 20;
-    int hurt_cool_down_duration = 160;
+    int hurt_cool_down_duration = 10;
     int hurt_cool_down_counter = hurt_cool_down_duration-2;
     int hurt_hit_back_dst = 80;
-    int speed = 2;
+    int speed = 4;
   char class_name[20];
 
  private:

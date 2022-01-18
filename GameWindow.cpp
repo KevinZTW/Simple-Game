@@ -127,6 +127,10 @@ bool GameWindow::init_scene_monster(const std::string &config_path){
         if (monster_type == "DeathBringer"){
             std::cout <<"add death bringer" << x << y << r<<std::endl;
             m = new DeathBringer(x, y, r);
+        }else if (monster_type == "Imp"){
+            m = new Imp(x, y, r);
+        }else if (monster_type == "Slime"){
+            m = new Slime(x, y, r);
         }
         monsterList.push_back(m);
     }

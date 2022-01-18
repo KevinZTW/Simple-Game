@@ -48,16 +48,18 @@ void People::Move(){
 };
 
 void People::Hurt(int power){
-
+        std::cout <<"hurt!"<<std::endl;
     if (hurt_cool_down_counter == hurt_cool_down_duration - 1){
+        std::cout <<"  trigger"<<std::endl;
         HealthPoint -=power;
         circle->x -= hurt_hit_back_dst;
         //todo add sound
 
         //todo add image effect
-    }else{
-        hurt_cool_down_counter = (hurt_cool_down_counter+1)%hurt_cool_down_duration;
+
     }
+        hurt_cool_down_counter = (hurt_cool_down_counter+1)%hurt_cool_down_duration;
+    
 }
 
 

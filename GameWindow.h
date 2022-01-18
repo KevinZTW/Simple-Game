@@ -8,10 +8,13 @@
 #include <list>
 #include <string>
 #include <time.h>
+
 #include "Item.h"
 #include "Circle.h"
 #include "People.h"
 #include "DeathBringer.h"
+#include "Imp.h"
+#include "Slime.h"
 #include "Menu.h"
 #include "Level.h"
 #include "Wolf.h"
