@@ -40,6 +40,15 @@ class People : public Object {
   void Move();
   void Attack(std::vector<Monster*> &monsters);
   void Hurt(int power);
+  void reset_position(int type){
+      if (type ==0){
+          circle->x =  10;
+
+      }else {
+          circle->x =  window_width - 10;
+      }
+
+  }
   int getHealth(){return HealthPoint;}
   int AddHealth(int power){HealthPoint+= power;}
     //sound
@@ -52,7 +61,7 @@ class People : public Object {
     int attack_pow = 1;
   int direction_count[4];
     int HealthPoint = 20;
-    int hurt_cool_down_duration = 10;
+    int hurt_cool_down_duration = 5;
     int hurt_cool_down_counter = hurt_cool_down_duration-2;
     int hurt_hit_back_dst = 80;
     int speed = 4;

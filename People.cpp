@@ -59,7 +59,7 @@ void People::Hurt(int power){
 
     }
         hurt_cool_down_counter = (hurt_cool_down_counter+1)%hurt_cool_down_duration;
-    
+
 }
 
 

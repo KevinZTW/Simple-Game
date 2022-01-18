@@ -112,7 +112,18 @@ Tower *GameWindow::create_tower(int type) {
 
   return t;
 }
+void GameWindow::change_scene(){
+    //clean up
+    al_destroy_bitmap(background);
+    monsterList.clear();
 
+    std::string background_path = "./src/" + std::to_string(scene) + ".png";
+    std::string config_path = "./MonsterConfig/scene" + std::to_string(scene)+".txt";
+    background = al_load_bitmap(background_path.c_str());
+    init_scene_monster(config_path);
+
+
+}
 bool GameWindow::init_scene_monster(const std::string &config_path){
     //open monster config file
     std::ifstream config_in;
@@ -173,7 +184,6 @@ void GameWindow::game_play() {
     msg = game_run();
   }
 
-  show_err_msg(msg);
 }
 
 void GameWindow::show_err_msg(int msg) {
@@ -241,12 +251,24 @@ void GameWindow::init_start_menu(){
     start_menu_background[0] = al_load_bitmap("./src/start/0.png");
     start_menu_background[1] = al_load_bitmap("./src/start/1.png");
 }
+void GameWindow::init_end_menu(){
+    end_menu_background[0] = al_load_bitmap("./src/end/0.png");
+    end_menu_background[1] = al_load_bitmap("./src/end/1.png");
+}
 
 void GameWindow::run_start_menu(){
     if (!al_is_event_queue_empty(event_queue)) {
         process_menu_event();
     }
     al_draw_bitmap(start_menu_background[start_menu_select], 0, 0, 0);
+    al_flip_display();
+}
+
+void GameWindow::run_end_menu(){
+    if (!al_is_event_queue_empty(event_queue)) {
+        process_menu_event();
+    }
+    al_draw_bitmap(end_menu_background[end_menu_select], 0, 0, 0);
     al_flip_display();
 }
 
@@ -272,19 +294,6 @@ void GameWindow::game_begin() {
 int GameWindow::game_run() {
   int error = GAME_CONTINUE;
 
-  if (changeScene){
-      //todo change scene view
-
-      //reset hero's position
-      //clear all monster
-      monsterList.clear();
-      //create new monster
-      init_scene_monster(monster_config_path);
-      changeScene = false;
-      //redraw
-      al_flip_display();
-  }
-
   if (!al_is_event_queue_empty(event_queue)) {
     error = process_event();
   }
@@ -302,7 +311,22 @@ int GameWindow::game_update() {
         int dst = abs((*it)->getX() -  hero->getX());
         if (dst < 10)hero_hurt_by_dst = true;
     }
-    if (hero_hurt_by_dst) hero->Hurt(5);
+
+    if (hero_hurt_by_dst) {
+        hero->Hurt(5);
+    }
+
+    if (hero->getHealth() <= 0)return GAME_EXIT;
+    //reach
+    if (hero->getX() >window_width - 10){
+        scene++;
+        change_scene();
+        hero->reset_position(0);
+    } else if (hero->getX() < 10 && scene>0){
+        scene--;
+        change_scene();
+        hero->reset_position(1);
+    }
 
     //====Monster========
     //kill monster if no HP
@@ -326,65 +350,6 @@ int GameWindow::game_update() {
     //update counter
     monster_state_update_counter = (monster_state_update_counter + 1) % monster_state_update_frequency;
 
-
-
-
-//  unsigned int i, j;
-//  std::list<Tower *>::iterator it;
-
-  /*TODO:*/
-  /*Allow towers to detect if monster enters its range*/
-  /*Hint: Tower::DetectAttack*/
-//  for (auto _tower : towerSet) {
-//    for (auto _monster : monsterSet) {
-//      if (_tower->DetectAttack(_monster)) break;
-//    }
-//  }
-  // update every monster
-  // check if it is destroyed or reaches end point
-//  for (i = 0; i < monsterSet.size(); i++) {
-//    bool isDestroyed = false, isReachEnd = false;
-//
-//    /*TODO:*/
-//    /*1. For each tower, traverse its attack set*/
-//    /*2. If the monster collide with any attack, reduce the HP of the monster*/
-//    /*3. Remember to set isDestroyed to "true" if monster is killed*/
-//    /*Hint: Tower::TriggerAttack*/
-//    for (auto it : towerSet) {
-//      isDestroyed = it->TriggerAttack(monsterSet[i]);
-//    }
-//
-//    isReachEnd = monsterSet[i]->Move();
-//
-//    if (isDestroyed) {
-//      Monster *m = monsterSet[i];
-//
-//      menu->Change_Coin(m->getWorth());
-//      menu->Gain_Score(m->getScore());
-//      monsterSet.erase(monsterSet.begin() + i);
-//      i--;
-//      // if using vector, need to notice that index would change after
-//      // erase();
-//      delete m;
-//
-//    } else if (isReachEnd) {
-//      Monster *m = monsterSet[i];
-//
-//      if (menu->Subtract_HP()) return GAME_EXIT;
-//
-//      monsterSet.erase(monsterSet.begin() + i);
-//      i--;
-//      delete m;
-//    }
-//  }
-
-  /*TODO:*/
-  /*1. Update the attack set of each tower*/
-  /*Hint: Tower::UpdateAttack*/
-  // To erase the attack which is out of the range of the tower ???
-  // why this happened in the beginning?
-//  for (auto _tower : towerSet) _tower->UpdateAttack();
-
   return GAME_CONTINUE;
 }
 
@@ -393,16 +358,13 @@ void GameWindow::game_reset() {
   for (auto &&child : towerSet) {
     delete child;
   }
-  towerSet.clear();
-  monsterSet.clear();
 
-  selectedTower = -1;
-  lastClicked = -1;
-  Coin_Inc_Count = 0;
-  Monster_Pro_Count = 0;
-  mute = false;
+  monsterList.clear();
+  itemList.clear();
+
+
   redraw = false;
-//  menu->Reset();
+
 
   // stop sample instance
   al_stop_sample_instance(backgroundSound);
@@ -442,14 +404,28 @@ int GameWindow::process_menu_event(){
         switch (event.keyboard.keycode) {
 
             case ALLEGRO_KEY_UP:
-                if (start_menu_select>0)start_menu_select--;
+                if (gameState==Start) {
+                    if (start_menu_select > 0)start_menu_select--;
+                }else {
+                    if (end_menu_select > 0)end_menu_select--;
+                };
                 break;
             case ALLEGRO_KEY_DOWN:
-                if (start_menu_select < 1)start_menu_select++;
+                if (gameState==Start) {
+                    if (start_menu_select < 1)start_menu_select++;
+                }else {
+                    if (end_menu_select < 1)end_menu_select++;
+                }
                 break;
             case ALLEGRO_KEY_ENTER:
-                if (start_menu_select == 0)gameState = Game;
-                if (start_menu_select == 1)exit(0);
+                if (gameState==Start){
+                    if (start_menu_select == 0) gameState = Game;
+                    if (start_menu_select == 1) exit(0);
+                }else if (gameState==End){
+                    if (end_menu_select == 0) gameState = Game;
+                    if (end_menu_select == 1) exit(0);
+                }
+
                 break;
             case ALLEGRO_KEY_M:
                 mute = !mute;

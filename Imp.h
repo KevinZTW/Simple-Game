@@ -15,6 +15,10 @@ public :
         attack_sound = al_create_sample_instance(sample);
      al_set_sample_instance_playmode(attack_sound, ALLEGRO_PLAYMODE_ONCE);
      al_attach_sample_instance_to_mixer(attack_sound, al_get_default_mixer());
+            HealthPoint = 7;
+            speed = 5;
+            worth = 30;
+            score = 30;
     }
 
 

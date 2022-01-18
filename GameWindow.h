@@ -36,6 +36,7 @@
 #define GAME_NEXT_LEVEL 6
 #define GAME_EXIT 7
 
+
 // clock rate
 const float FPS = 60;
 
@@ -46,7 +47,7 @@ const int LevelNum = 4;
 const int CoinSpeed = FPS * 2;
 const int Coin_Time_Gain = 1;
 
-enum {Start =0 ,Game, End, Video1};
+enum {Start =0 ,Game, End, Exit, Video1};
 class GameWindow
 {
 public:
@@ -66,7 +67,9 @@ public:
     void game_destroy();
 
         void init_start_menu();
+    void init_end_menu();
     void run_start_menu();
+    void run_end_menu();
     void screen_cleanup();
     // each drawing scene function
     void draw_running_map();
@@ -80,6 +83,7 @@ public:
     bool isOnRoad();
 
     bool init_scene_monster(const std::string &config_path);
+    void change_scene();
     Tower* create_tower(int);
     Monster* create_monster();
 
@@ -120,7 +124,9 @@ private:
 
     //menu
     ALLEGRO_BITMAP* start_menu_background[2];
+    ALLEGRO_BITMAP* end_menu_background[2];
     int start_menu_select = 0;
+    int end_menu_select = 0;
     //legacy
     std::vector<Monster*> monsterSet;
     std::list<Tower*> towerSet;
@@ -134,7 +140,8 @@ private:
     bool mute = false;
 
     bool changeScene = false;
-    std::string monster_config_path = "./MonsterConfig/scene1.txt";
+    int scene = 0;
+    std::string monster_config_path = "./MonsterConfig/scene0.txt";
 };
 
 
