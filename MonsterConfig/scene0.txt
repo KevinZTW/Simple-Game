@@ -1,7 +1,6 @@
-6
-Imp 900 1000 12
-DeathBringer 1200 1000 12
-Knuckle 300 1000 12
+5
 Slime 400 1000 12
 Slime 500 1000 12
 Slime 700 1000 12
+Slime 950 1000 12
+Slime 1100 1000 12

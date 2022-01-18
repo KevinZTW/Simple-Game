@@ -1,4 +1,9 @@
-3
+8
 Slime 100 1000 12
-Imp 900 1000 12
+DeathBringer 300 1000 12
+Slime 400 1000 12
+DeathBringer 450 1000 12
+Slime 550 1000 12
+Slime 700 1000 12
+DeathBringer 900 1000 12
 DeathBringer 1200 1000 12

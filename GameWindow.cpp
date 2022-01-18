@@ -407,12 +407,14 @@ int GameWindow::game_update() {
     //====Monster========
     //kill monster if no HP
     int more = false;
+    if (scene==3 && monsterList.empty())return GAME_EXIT;
+
     for (auto it = monsterList.begin(); it !=monsterList.end();){
         if ((*it)->getWorth() == 3000){
             //kunckle!
             std::random_device rd; // obtain a random number from hardware
             std::mt19937 gen(rd()); // seed the generator
-            std::uniform_int_distribution<> distr(0, 80); // define the range
+            std::uniform_int_distribution<> distr(0, 120); // define the range
             int rand_num = distr(gen);
             if (rand_num < 2){
                 al_play_sample_instance((*it)->crazy_sound);
@@ -623,6 +625,8 @@ int GameWindow::process_event() {
                     //collect item
                     al_play_sample_instance(hero->collect_sound);
                     if ((*it)->type==HealthPack) hero->AddHealth(20);
+                    else if ((*it)->type==SpecialA) hero->AddExp();
+                    else hero->AddPower();
                     itemList.erase(it);
                 } else {
                     it++;

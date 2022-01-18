@@ -3,7 +3,7 @@
 int main(int argc, char *argv[]) {
   GameWindow *Game = new GameWindow();
     //在這邊寫個全域變數更改 key event 行為 + 先 draw start menu?
-//    Game->play_video();
+    Game->play_video();
 
     while(Game->gameState !=Exit){
 

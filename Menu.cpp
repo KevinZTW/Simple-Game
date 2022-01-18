@@ -3,7 +3,7 @@
 const int ThumbWidth = 50;
 const int ThumbHeight = 50;
 const int gapX = 40, gapY = 30;
-const int offsetX = 30 + field_width, offsetY = 150;
+const int offsetX = 150, offsetY = 150;
 const int Initial_Health = 1;
 const int Initial_Coin = 10;
 
