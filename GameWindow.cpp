@@ -46,6 +46,11 @@ void GameWindow::game_init() {
   al_set_sample_instance_playmode(backgroundSound, ALLEGRO_PLAYMODE_ONCE);
   al_attach_sample_instance_to_mixer(backgroundSound, al_get_default_mixer());
 
+    sample = al_load_sample("BackgroundMusic2.ogg");
+    backgroundSound2 = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(backgroundSound2, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(backgroundSound2, al_get_default_mixer());
+
   level = new LEVEL(1);
   hero = new People;
   menu = new Menu(hero);
@@ -116,6 +121,13 @@ void GameWindow::change_scene(){
     //clean up
     al_destroy_bitmap(background);
     monsterList.clear();
+    if (scene==3){
+        al_stop_sample_instance(backgroundSound);
+        al_play_sample_instance(backgroundSound2);
+    }else{
+        al_stop_sample_instance(backgroundSound2);
+        al_play_sample_instance(backgroundSound);
+    }
 
     std::string background_path = "./src/" + std::to_string(scene) + ".png";
     std::string config_path = "./MonsterConfig/scene" + std::to_string(scene)+".txt";
@@ -500,6 +512,7 @@ void GameWindow::game_destroy() {
   al_destroy_sample(sample);
   al_destroy_sample_instance(startSound);
   al_destroy_sample_instance(backgroundSound);
+    al_destroy_sample_instance(backgroundSound2);
 
   delete level;
   delete menu;

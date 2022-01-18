@@ -121,6 +121,7 @@ private:
     ALLEGRO_SAMPLE_INSTANCE *clearSound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *failSound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *backgroundSound = NULL;
+    ALLEGRO_SAMPLE_INSTANCE *backgroundSound2 = NULL;
 
     LEVEL *level = NULL;
     Menu *menu = NULL;
