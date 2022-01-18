@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H_INCLUDED
 #define MAINWINDOW_H_INCLUDED
 
+#include <allegro5/allegro_video.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include "algif5/src/algif.h"
@@ -54,7 +55,10 @@ public:
 
     // constructor
     GameWindow();
+
     // each process of scene
+    void video_display(ALLEGRO_VIDEO *video);
+    void play_video();
     void game_init();
     void game_reset();
     void game_play();
@@ -95,14 +99,18 @@ private:
     ALLEGRO_BITMAP *tower[Num_TowerType];
     ALLEGRO_BITMAP *background = NULL;
 
+    ALLEGRO_VIDEO * video;
+
     ALLEGRO_DISPLAY* display = NULL;
     ALLEGRO_FONT *font = NULL;
     ALLEGRO_FONT *Medium_font = NULL;
     ALLEGRO_FONT *Large_font = NULL;
 
     ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+    ALLEGRO_EVENT_QUEUE *video_event_queue = NULL;
     ALLEGRO_EVENT event;
     ALLEGRO_TIMER *timer = NULL;
+    ALLEGRO_TIMER *video_timer = NULL;
     ALLEGRO_TIMER *monster_pro = NULL;
 
     ALLEGRO_SAMPLE *sample = NULL;

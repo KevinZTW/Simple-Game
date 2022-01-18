@@ -206,7 +206,8 @@ GameWindow::GameWindow() {
   //可以用 al_set_window...調整視窗置放的地方
 
   event_queue = al_create_event_queue();
-
+  video_event_queue = al_create_event_queue();
+    video_timer = al_create_timer(1.0 / 120);
   timer = al_create_timer(1.0 / FPS);
   monster_pro = al_create_timer(1.0 / FPS);
 
@@ -226,10 +227,16 @@ GameWindow::GameWindow() {
   al_init_ttf_addon();     // initialize the ttf (True Type Font) addon
   al_init_image_addon();   // initialize the image addon
   al_init_acodec_addon();  // initialize acodec addon
+  al_init_video_addon(); // init video add on
 
   al_install_keyboard();  // install keyboard event
   al_install_mouse();     // install mouse event
   al_install_audio();     // install audio event
+  video = al_open_video("./src/0.ogm");
+
+  ALLEGRO_EVENT_SOURCE  *temp = al_get_video_event_source(video);
+  al_register_event_source(video_event_queue, temp);
+
 
   font = al_load_ttf_font("Caviar_Dreams_Bold.ttf", 12, 0);  // load small font
   Medium_font =
@@ -244,7 +251,44 @@ GameWindow::GameWindow() {
   al_register_event_source(event_queue, al_get_timer_event_source(timer));
   al_register_event_source(event_queue, al_get_timer_event_source(monster_pro));
 
+    al_register_event_source(video_event_queue, al_get_timer_event_source(video_timer));
 
+}
+
+void GameWindow::video_display(ALLEGRO_VIDEO *video){
+            ALLEGRO_BITMAP *frame = al_get_video_frame(video);
+    if(!frame)return ;
+        al_draw_scaled_bitmap(frame,
+                              0,0,
+                              al_get_bitmap_width(frame),
+                                al_get_bitmap_height(frame),
+                               0,0,
+                                al_get_display_width(display),
+                              al_get_display_height(display), 0);
+
+        al_flip_display();
+}
+
+void GameWindow::play_video() {
+
+
+    al_start_timer(video_timer);
+
+    al_reserve_samples(1);
+    al_start_video(video, al_get_default_mixer());
+    while(1){
+        std::cout <<"flip"<<std::endl;
+        al_wait_for_event(video_event_queue, &event);
+        if(event.type == ALLEGRO_EVENT_TIMER){
+            video_display(video);
+        }else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+            al_close_video(video);
+            break;
+        }else if (event.type == ALLEGRO_EVENT_VIDEO_FINISHED){
+            break;
+        }
+
+    }
 }
 
 void GameWindow::init_start_menu(){
@@ -287,7 +331,7 @@ void GameWindow::game_begin() {
 //    ;
   al_play_sample_instance(backgroundSound);
 
-  al_start_timer(timer);
+    al_start_timer(timer);
   al_start_timer(monster_pro);
 }
 
@@ -379,12 +423,14 @@ void GameWindow::game_destroy() {
 
   al_destroy_display(display);
   al_destroy_event_queue(event_queue);
+    al_destroy_event_queue(video_event_queue);
   al_destroy_font(font);
   al_destroy_font(Medium_font);
   al_destroy_font(Large_font);
 
   al_destroy_timer(timer);
   al_destroy_timer(monster_pro);
+    al_destroy_timer(video_timer);
 
   for (int i = 0; i < 5; i++) al_destroy_bitmap(tower[i]);
 

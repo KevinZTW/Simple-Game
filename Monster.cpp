@@ -120,23 +120,6 @@ void Monster::UpdateState(int hero_x, int hero_y) {
         //30% to change state
         if (rand_num > 20) state = rand_num % 4;
     }
-
-
-
-//    if (base == rand_num){
-//        switch (state) {
-//            case LeftIdle :
-//
-//                break;
-//            case RightIdle :
-//                break;
-//            case LeftRun :
-//                break;
-//            case RightRun :
-//                break;
-//        }
-//    }
-
 }
 void Monster::Move(){
     if (state == RightRun) circle->x += 2;
