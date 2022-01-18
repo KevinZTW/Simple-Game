@@ -1,0 +1,4 @@
+3
+Slime 100 1000 12
+Imp 900 1000 12
+DeathBringer 1200 1000 12

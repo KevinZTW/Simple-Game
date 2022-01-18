@@ -160,7 +160,7 @@ Monster::Subtract_HP(int harm_point)
 void
 Monster::Draw()
 {
-    al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,79, 200));
+//    al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,79, 200));
     ALLEGRO_BITMAP *bitmap = algif_get_bitmap(imgs[state], al_get_time());
     al_draw_bitmap(bitmap, circle->x, circle->y, 0);
 

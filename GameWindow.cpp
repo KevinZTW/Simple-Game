@@ -124,11 +124,28 @@ void GameWindow::change_scene(){
 
 
 }
+
+void GameWindow::more_monster(){
+    std::cout << "more!!" <<std::endl;
+//    Monster * m = NULL;
+//    m = new Slime(100, 1000, 10);
+//    monsterList.push_back(m);
+//    m = new Slime(720, 1000, 10);
+//    monsterList.push_back(m);
+//    m = new Slime(400, 1000, 10);
+//    monsterList.push_back(m);
+//    m = new Imp(50, 1000, 10);
+//    monsterList.push_back(m);
+//    m = new DeathBringer(600, 1000, 10);
+//    monsterList.push_back(m);
+}
+
 bool GameWindow::init_scene_monster(const std::string &config_path){
     //open monster config file
     std::ifstream config_in;
     config_in.open(config_path, std::ios::in);
     int monster_num;
+
     config_in >> monster_num;
     Monster * m = NULL;
     for (int i = 0; i < monster_num; i++){
@@ -142,6 +159,8 @@ bool GameWindow::init_scene_monster(const std::string &config_path){
             m = new Imp(x, y, r);
         }else if (monster_type == "Slime"){
             m = new Slime(x, y, r);
+        }else if (monster_type == "Knuckle"){
+            m = new Knuckle(x, y, r);
         }
         monsterList.push_back(m);
     }
@@ -364,6 +383,7 @@ int GameWindow::game_update() {
     //reach
     if (hero->getX() >window_width - 10){
         scene++;
+
         change_scene();
         hero->reset_position(0);
     } else if (hero->getX() < 10 && scene>0){
@@ -374,15 +394,55 @@ int GameWindow::game_update() {
 
     //====Monster========
     //kill monster if no HP
-
+    int more = false;
     for (auto it = monsterList.begin(); it !=monsterList.end();){
+        if ((*it)->getWorth() == 3000){
+            //kunckle!
+            std::random_device rd; // obtain a random number from hardware
+            std::mt19937 gen(rd()); // seed the generator
+            std::uniform_int_distribution<> distr(0, 80); // define the range
+            int rand_num = distr(gen);
+            if (rand_num < 2){
+                al_play_sample_instance((*it)->crazy_sound);
+                more = true;
+
+
+            }
+        }
         if ((*it)->getHealth() < 1) {
-            Item * item = new Item(0, (*it)->getX(), window_height - 100);
-            itemList.push_back(item);
+
+            //random item
+
+
+            //else random to idle/Movement state
+            std::random_device rd; // obtain a random number from hardware
+            std::mt19937 gen(rd()); // seed the generator
+            std::uniform_int_distribution<> distr(0, 6); // define the range
+            int rand_num = distr(gen);
+            if (rand_num < 3){
+                Item * item = new Item(rand_num, (*it)->getX(), window_height - 100);
+                itemList.push_back(item);
+            }
+            hero->exp += (*it)->getWorth();
+            if(hero->exp > hero->leveup_exp_req){
+
+                hero->Level_Up();
+
+            }
             monsterList.erase(it);
         }else  ++it;
     }
 
+
+    if (more){
+        std::random_device rd; // obtain a random number from hardware
+        std::mt19937 gen(rd()); // seed the generator
+        std::uniform_int_distribution<> distr(0, 1000); // define the range
+        int rand_num = distr(gen);
+
+        Monster * m = new Slime(rand_num, 1000, 10);
+        monsterList.push_back(m);
+    }
     //update monster action
     //current move left or move right
     for (auto monster : monsterList) monster->Move();

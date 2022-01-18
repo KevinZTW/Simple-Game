@@ -49,6 +49,7 @@ void People::Move(){
 
 void People::Hurt(int power){
         std::cout <<"hurt!"<<std::endl;
+    al_play_sample_instance(hurt_sound);
     if (hurt_cool_down_counter == hurt_cool_down_duration - 1){
         std::cout <<"  trigger"<<std::endl;
         HealthPoint -=power;
@@ -101,6 +102,10 @@ People::People() {
     al_set_sample_instance_playmode(swing_sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(swing_sound, al_get_default_mixer());
 
+    sample = al_load_sample("./Hero2/level.ogg");
+    level_sound = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(level_sound, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(level_sound, al_get_default_mixer());
 
 }
 
@@ -112,9 +117,16 @@ People::~People() {
     al_destroy_sample_instance(hurt_sound);
     al_destroy_sample_instance(walk_sound);
     al_destroy_sample_instance(swing_sound);
+    al_destroy_sample_instance(level_sound);
   delete circle;
 }
-
+void People::Level_Up() {
+    al_play_sample_instance(level_sound);
+    HealthPoint += 20;
+    exp -= leveup_exp_req;
+    leveup_exp_req *= 2;
+    level += 1;
+}
 void
 People::Load_Move() {
   char buffer[50];
@@ -141,7 +153,7 @@ People::Load_Move() {
 void
 People::Draw() {
 
-    al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,79, 200));
+//    al_draw_filled_circle(circle->x, circle->y, circle->r, al_map_rgba(196, 79,79, 200));
     ALLEGRO_BITMAP *bitmap = algif_get_bitmap(imgs[state], al_get_time());
     al_draw_bitmap(bitmap, circle->x-100, circle->y-100, 0);
 

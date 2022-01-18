@@ -40,6 +40,7 @@ public:
   int getScore() { return score; }
   int getHealth(){return HealthPoint;}
   bool Subtract_HP(int);
+    ALLEGRO_SAMPLE_INSTANCE *crazy_sound = NULL;
 
  protected:
   int direction_count[4];

@@ -46,7 +46,7 @@ Menu::Menu(People* h)
 
     love = al_load_bitmap("./Tower/love.png");
 
-    menuFont = al_load_ttf_font("pirulen.ttf", 12, 0); // load font
+    menuFont = al_load_ttf_font("pirulen.ttf", 32, 0); // load font
 }
 
 Menu::~Menu()
@@ -78,10 +78,10 @@ Menu::Draw()
     al_draw_bitmap(love, offsetX, 20, 0);
     al_draw_text(menuFont, al_map_rgb(255, 255, 255), 2*al_get_bitmap_width(love) + offsetX, 20, 0, buffer);
 
-    sprintf(buffer, "Coin: %d", Coin);
+    sprintf(buffer, "Level: %d", hero->level);
     al_draw_text(menuFont, al_map_rgb(255, 255, 255), offsetX, 20 + gapY, 0, buffer);
 
-    sprintf(buffer, "Score: %d", Score);
+    sprintf(buffer, "Exp: %d", hero->exp);
     al_draw_text(menuFont, al_map_rgb(255, 255, 255), offsetX, 20 + 2*gapY, 0, buffer);
 
     //use for drawing the side bar selection

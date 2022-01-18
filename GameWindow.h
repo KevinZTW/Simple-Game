@@ -9,13 +9,14 @@
 #include <list>
 #include <string>
 #include <time.h>
-
+#include <random>
 #include "Item.h"
 #include "Circle.h"
 #include "People.h"
 #include "DeathBringer.h"
 #include "Imp.h"
 #include "Slime.h"
+#include "Knuckle.h"
 #include "Menu.h"
 #include "Level.h"
 #include "Wolf.h"
@@ -59,6 +60,7 @@ public:
     // each process of scene
     void video_display(ALLEGRO_VIDEO *video);
     void play_video();
+    void more_monster();
     void game_init();
     void game_reset();
     void game_play();

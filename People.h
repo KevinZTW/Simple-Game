@@ -51,11 +51,18 @@ class People : public Object {
   }
   int getHealth(){return HealthPoint;}
   int AddHealth(int power){HealthPoint+= power;}
+  void Level_Up();
     //sound
     ALLEGRO_SAMPLE_INSTANCE *swing_sound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *hurt_sound = NULL;
+    ALLEGRO_SAMPLE_INSTANCE *level_sound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *collect_sound = NULL;
     ALLEGRO_SAMPLE_INSTANCE *walk_sound = NULL;
+
+    int level = 1;
+    int score = 0;
+    int exp = 0;
+    int leveup_exp_req = 10;
  protected:
     int attack_dst = 60;
     int attack_pow = 1;
